@@ -1,3 +1,5 @@
 *.svg
 *.tag
 output/
+
+*.exe
