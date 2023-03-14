@@ -110,6 +110,13 @@ void readModel
     model->p[parID-1].v.x = 0.01;
   }
 
+  for ( int iPar = 0 ; iPar < nSpr ; iPar++ )
+  {
+    fscanf(fp, "%d %d", &parID, &parID);
+
+    model->p[parID-1].constraint = 2;
+  }
+
   fclose( fp );
 }
     

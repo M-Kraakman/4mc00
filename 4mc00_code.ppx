@@ -1,2 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings version="1.0" />
+<settings version="1.0">
+	<category name="mylib.c">
+		<category name="Window">
+			<property name="Left" type="integer">0</property>
+			<property name="Top" type="integer">0</property>
+			<property name="Right" type="integer">1283</property>
+			<property name="Bottom" type="integer">507</property>
+			<property name="Maximized" type="integer">0</property>
+			<property name="Active" type="integer">0</property>
+		</category>
+	</category>
+	<category name="mylib.h">
+		<category name="Window">
+			<property name="Left" type="integer">4294967287</property>
+			<property name="Top" type="integer">4294967258</property>
+			<property name="Right" type="integer">1720</property>
+			<property name="Bottom" type="integer">686</property>
+			<property name="Maximized" type="integer">1</property>
+			<property name="Active" type="integer">1</property>
+		</category>
+	</category>
+	<category name="catheter.c">
+		<category name="Window">
+			<property name="Left" type="integer">224</property>
+			<property name="Top" type="integer">224</property>
+			<property name="Right" type="integer">1507</property>
+			<property name="Bottom" type="integer">731</property>
+			<property name="Maximized" type="integer">0</property>
+			<property name="Active" type="integer">0</property>
+		</category>
+	</category>
+</settings>
