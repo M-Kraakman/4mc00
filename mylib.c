@@ -69,8 +69,8 @@ void readModel
 {
   FILE         *fp;
   float        x,y,mass;
-  int          iPar = 0;
-  int          nPar,nPres,nSpr,parID;
+  int          iPar = 0, iSpr=0;
+  int          nPar,nPres,nSpr,parID,parID1,parID2;
 
   if((fp=fopen(name,"r")) == NULL) {
     printf("Cannot open file.\n");
@@ -110,11 +110,17 @@ void readModel
     model->p[parID-1].v.x = 0.01;
   }
 
-  for ( int iPar = 0 ; iPar < nSpr ; iPar++ )
+  for ( int iSpr = 0 ; iSpr < nSpr ; iSpr++ )
   {
-    fscanf(fp, "%d %d", &parID, &parID);
+    fscanf(fp, "%d %d", &parID1, &parID2);
+    
+    model->s[iSpr].ke = 100.0;
+    model->s[iSpr].kp = 10.0;
 
-    model->p[parID-1].constraint = 2;
+    model->s[iSpr].p1 = parID1;
+    model->s[iSpr].p2 = parID2;
+    
+    printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
   }
 
   fclose( fp );

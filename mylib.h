@@ -58,15 +58,31 @@ typedef struct
 
 
 //------------------------------------------------------------------------------
+// Definition of new type Spring
+//------------------------------------------------------------------------------
+
+
+typedef struct
+{
+  double    kp;
+  double    ke;
+
+  int       p1;
+  int       p2;  
+} Spring;
+
+
+//------------------------------------------------------------------------------
 // Definition of new type Model that contains
 //   an array of particles and some counter.
 // 
-//   an array of sptring should be added here!
+//   an array of spring should be added here!
 //------------------------------------------------------------------------------
 
 typedef struct
 {
   Particle p[MAX_POINTS];
+  Spring   s[MAX_SPRINGS];
   int      nPrs;
   int      nPar;
   int      nSpr;

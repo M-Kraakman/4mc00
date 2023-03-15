@@ -40,7 +40,7 @@ int main( int argc , char *argv[])
       plot( svgfile , &model );
     }
   }
-
+  
   printf("Simulation terminated successfully\n");
 
   return 0;
