@@ -25,7 +25,7 @@ int main( int argc , char *argv[])
      
   readModel( "geom01.dat" , &model );
  
-  while( iCyc < 300000 )
+  while( iCyc < 300000 ) //300000
   {
     iCyc++;
          

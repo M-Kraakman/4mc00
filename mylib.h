@@ -33,8 +33,8 @@
 
 typedef struct
 {
-  double   x;
-  double   y;
+	double   x;
+	double   y;
 } Vec2;
 
 
@@ -45,15 +45,17 @@ typedef struct
 
 typedef struct
 {
-  Vec2     r;
-  Vec2     v;
-  Vec2     a;
+	int		parID;
 
-  Vec2     f;
+	Vec2     r;
+	Vec2     v;
+	Vec2     a;
 
-  double   mass;
-   
-  int      constraint;
+	Vec2     f;
+
+	double   mass;
+
+	int      constraint;
 } Particle;
 
 
