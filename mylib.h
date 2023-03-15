@@ -71,6 +71,15 @@ typedef struct
   int       p2;  
 } Spring;
 
+typedef struct
+{
+  double    xFunc;
+  double    gFunc;
+  double    D;
+  Vec2      n;
+  Vec2      fc;
+} Force;
+
 
 //------------------------------------------------------------------------------
 // Definition of new type Model that contains
@@ -83,6 +92,7 @@ typedef struct
 {
   Particle p[MAX_POINTS];
   Spring   s[MAX_SPRINGS];
+  Force    f[MAX_POINTS];
   int      nPrs;
   int      nPar;
   int      nSpr;

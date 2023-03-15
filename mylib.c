@@ -120,7 +120,7 @@ void readModel
     model->s[iSpr].p1 = parID1;
     model->s[iSpr].p2 = parID2;
     
-    printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
+    //printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
   }
 
   fclose( fp );
@@ -142,7 +142,7 @@ void solve
   int iPar;
 
   const int nPar = model->nPar;
-  
+
   for ( iPar = 0 ; iPar < nPar ; iPar++ )
   {
     model->p[iPar].r.x += DT * model->p[iPar].v.x + 0.5*dt2*model->p[iPar].a.x;
@@ -153,9 +153,29 @@ void solve
     
     model->p[iPar].f.x = 0.;
     model->p[iPar].f.y = 0.;
+
   }
 
-  // Calculate forces here
+  double a = 1., b = 0.;
+  double kp = model->s[0].kp;
+
+  for ( iPar = 0 ; iPar < nPar; iPar++ )
+  {
+    model->f[iPar].gFunc = a * model->p[iPar].r.x + b;
+    model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
+    model->f[iPar].D = sqrt(
+                              (model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x)
+                            + (model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y)
+                            );
+
+    model->f[iPar].n.x = -a;
+    model->f[iPar].n.y = 1.;
+
+    model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / abs(model->f[iPar].n.x * model-> f[iPar].n.y);
+    model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / abs(model->f[iPar].n.x * model-> f[iPar].n.y);
+
+    printf("%.1f and %.1f \n", model->f[iPar].fc.x, model->f[iPar].fc.y);
+  }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )
   { 
