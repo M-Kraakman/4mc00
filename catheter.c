@@ -24,8 +24,8 @@ int main( int argc , char *argv[])
   Model        model;                // List with particles and springs
      
   readModel( "geom01.dat" , &model );
-  printf("g(x)   x    D     nx   ny   norm   fcx   fcy\n");
-  while( iCyc < 1) //300000 )
+
+  while( iCyc < 1 /*300000*/ )
   {
     iCyc++;
          

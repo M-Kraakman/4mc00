@@ -66,6 +66,9 @@ typedef struct
 {
   double    kp;
   double    ke;
+  double    length0;
+  double    length;
+  double    uij;
 
   int       p1;
   int       p2;  

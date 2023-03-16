@@ -120,7 +120,21 @@ void readModel
     model->s[iSpr].p1 = parID1;
     model->s[iSpr].p2 = parID2;
     
-    //printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
+    model->s[iSpr].length0 =sqrt(
+                             (  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x)
+                             *  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x))
+                             +( (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y)
+                             *  (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y))
+                             );
+    
+    printf("Spring %d: %.1f %.1f %d %d %.2f \n",
+            
+            iSpr+1,
+            model->s[iSpr].ke,
+            model->s[iSpr].kp,
+            model->s[iSpr].p1,
+            model->s[iSpr].p2,
+            model->s[iSpr].length0);
   }
 
   fclose( fp );
@@ -139,9 +153,10 @@ void solve
 {
   const double dt2 = DT * DT;
   
-  int iPar;
+  int iPar, iSpr;
 
   const int nPar = model->nPar;
+  const int nSpr = model->nSpr;
 
   for ( iPar = 0 ; iPar < nPar ; iPar++ )
   {
@@ -156,8 +171,9 @@ void solve
 
   }
 
-  double a = 1., b = 0.;
+  double a = 0., b = 0.;
   double kp = model->s[0].kp;
+  double ks = model->s[0].ke;
 
   for ( iPar = 0 ; iPar < nPar; iPar++ )
   {
@@ -176,7 +192,7 @@ void solve
     model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / model->f[iPar].norm;
     model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / model->f[iPar].norm;
 
-    printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
+    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
 
             model->f[iPar].gFunc,
             model->f[iPar].xFunc,
@@ -185,7 +201,24 @@ void solve
             model->f[iPar].n.y,
             model->f[iPar].norm,
             model->f[iPar].fc.x,
-            model->f[iPar].fc.y);
+            model->f[iPar].fc.y);*/
+  }
+
+  for ( iSpr = 0; iSpr < nSpr; iSpr++ )
+  {
+    model->s[iSpr].length =sqrt(
+                                 ( (model->p[model->s[iSpr].p1].r.x - model->p[model->s[iSpr].p2].r.x)
+                                *  (model->p[model->s[iSpr].p1].r.x - model->p[model->s[iSpr].p2].r.x))
+                                +( (model->p[model->s[iSpr].p1].r.y - model->p[model->s[iSpr].p2].r.y)
+                                *  (model->p[model->s[iSpr].p1].r.y - model->p[model->s[iSpr].p2].r.y))
+                                );
+
+    model->s[iSpr].uij = model->p[model->s[iSpr].p1].r.x - model->p[model->s[iSpr].p2].r.x;
+
+    printf("%.2f %.2f\n",
+
+            model->s[iSpr].length,
+            model->s[iSpr].uij);
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )
