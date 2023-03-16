@@ -164,17 +164,28 @@ void solve
     model->f[iPar].gFunc = a * model->p[iPar].r.x + b;
     model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
     model->f[iPar].D = sqrt(
-                              (model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x)
-                            + (model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y)
+                              ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
+                            + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
                             );
 
     model->f[iPar].n.x = -a;
     model->f[iPar].n.y = 1.;
 
-    model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / abs(model->f[iPar].n.x * model-> f[iPar].n.y);
-    model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / abs(model->f[iPar].n.x * model-> f[iPar].n.y);
+    model->f[iPar].norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
 
-    printf("%.1f and %.1f \n", model->f[iPar].fc.x, model->f[iPar].fc.y);
+    model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / model->f[iPar].norm;
+    model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / model->f[iPar].norm;
+
+    printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
+
+            model->f[iPar].gFunc,
+            model->f[iPar].xFunc,
+            model->f[iPar].D,
+            model->f[iPar].n.x,
+            model->f[iPar].n.y,
+            model->f[iPar].norm,
+            model->f[iPar].fc.x,
+            model->f[iPar].fc.y);
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )

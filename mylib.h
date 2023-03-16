@@ -76,8 +76,10 @@ typedef struct
   double    xFunc;
   double    gFunc;
   double    D;
+  double    norm;
   Vec2      n;
   Vec2      fc;
+  Vec2      fs;
 } Force;
 
 
