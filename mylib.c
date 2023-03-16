@@ -35,6 +35,11 @@ void plot
 	int parID1;
 	int parID2;
 
+	float slope = 1.0;
+	float offset = 0.;
+	float wall_x2 = 1200;
+	float wall_y2;
+
 	of=fopen(name,"w");
 
 	fprintf(of,"<?xml version='1.0' standalone='no'?>\n");
@@ -53,20 +58,13 @@ void plot
 	        500-100*model->p[iPar].r.y,
 	        2.0 ,
 	        "#000000");
+	// printf("%.1f %.1f\n", 100*model->p[iPar].r.x, 500-100*model->p[iPar].r.y);
 	}
 
 	for ( iSpr = 0 ; iSpr < model->nSpr ; iSpr++)
 	{
 		parID1 = model->s[iSpr].p1 - 1;
 		parID2 = model->s[iSpr].p2 - 1;
-
-		//printf("Spring %d is connected to %d and %d at coordinates x1: %.2f y1: %.1f x2: %.1f y2: %.1f\n", iSpr+1, parID1, parID2, model->p[parID1-1].r.x,
-			//model->p[parID1-1].r.y, model->p[parID2-1].r.x, model->p[parID2-1].r.y);
-
-		/* printf("%.1f %.1f %.1f %.1f\n", 100*model->p[parID1].r.x,
-		        500-100*model->p[parID1].r.y,
-				100*model->p[parID2].r.x,
-		        500-100*model->p[parID2].r.y); */
 
 		fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n",
 				100*model->p[parID1].r.x,
@@ -75,9 +73,13 @@ void plot
 		        500-100*model->p[parID2].r.y
 				);
 	}
+	
+	wall_y2 = slope * wall_x2 + offset;
+	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, wall_y2);
+	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0, 0, 0, 0);
   
-  fprintf(of,"</g>\n</g>\n</svg>\n");
-  fclose(of);
+	fprintf(of,"</g>\n</g>\n</svg>\n");
+	fclose(of);
 }
 
 
