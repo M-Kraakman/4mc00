@@ -74,6 +74,10 @@ typedef struct
   int       p2;  
 } Spring;
 
+//------------------------------------------------------------------------------
+// Definition of new type Force for intermediate calculations of the forces
+//------------------------------------------------------------------------------
+
 typedef struct
 {
   double    xFunc;
