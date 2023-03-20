@@ -121,14 +121,7 @@ void readModel
     model->s[iSpr].p1 = parID1;
     model->s[iSpr].p2 = parID2;
     
-    model->s[iSpr].length0 =sqrt(
-                             (  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x)
-                             *  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x))
-                             +( (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y)
-                             *  (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y))
-                             );
-    
-    /*printf("Spring %d: %.1f %.1f %d %d %.2f \n",
+     /*printf("Spring %d: %.1f %.1f %d %d %.2f \n",
             
             iSpr+1,
             model->s[iSpr].ke,
@@ -159,6 +152,20 @@ void solve
   const int nPar = model->nPar;
   const int nSpr = model->nSpr;
 
+  for ( iSpr = 0 ; iSpr < nSpr; iSpr++ )
+  {
+    int parID1 = model->s[iSpr].p1;
+    int parID2 = model->s[iSpr].p2;
+
+    model->s[iSpr].length0 =sqrt(
+                             (  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x)
+                             *  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x))
+                             +( (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y)
+                             *  (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y))
+                             );
+
+  }
+
   for ( iPar = 0 ; iPar < nPar ; iPar++ )
   {
     model->p[iPar].r.x += DT * model->p[iPar].v.x + 0.5*dt2*model->p[iPar].a.x;
@@ -170,6 +177,8 @@ void solve
     model->p[iPar].f.x = 0.;
     model->p[iPar].f.y = 0.;
 
+    /*printf("%d %.2f %.2f \n", iPar+1, model->p[iPar].r.x, model->p[iPar].r.y)*/;
+
   }
 
   double a = 1., b = 0.;
@@ -178,11 +187,14 @@ void solve
 
   for ( iSpr = 0; iSpr < nSpr; iSpr++ )
   {
+    int parID1 = model->s[iSpr].p1;
+    int parID2 = model->s[iSpr].p2;
+
     model->s[iSpr].length =sqrt(
-                                 ( (model->p[model->s[iSpr].p1].r.x - model->p[model->s[iSpr].p2].r.x)
-                                *  (model->p[model->s[iSpr].p1].r.x - model->p[model->s[iSpr].p2].r.x))
-                                +( (model->p[model->s[iSpr].p1].r.y - model->p[model->s[iSpr].p2].r.y)
-                                *  (model->p[model->s[iSpr].p1].r.y - model->p[model->s[iSpr].p2].r.y))
+                                 ( (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x)
+                                *  (model->p[parID1 - 1].r.x - model->p[parID2 - 1].r.x))
+                                +( (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y)
+                                *  (model->p[parID1 - 1].r.y - model->p[parID2 - 1].r.y))
                                 );
 
     model->s[iSpr].uij = model->s[iSpr].length - model->s[iSpr].length0;
@@ -201,6 +213,7 @@ void solve
             model->s[iSpr].uij,
             model->f[iSpr].fs.x,
             model->f[iSpr].fs.y);*/
+    /*printf("%d %d %.2f %.2f %.2f\n",model->s[iSpr].p1, model->s[iSpr].p2,model->s[iSpr].length0,model->s[iSpr].length,model->s[iSpr].uij)*/;
   }
 
   for ( iPar = 0 ; iPar < nPar; iPar++ )
@@ -260,7 +273,7 @@ void solve
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;
 
-    printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);   
+    /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
   }
 }
 
