@@ -155,7 +155,7 @@ void readModel
     model->s[iSpr].p1 = parID1;
     model->s[iSpr].p2 = parID2;
     
-    //printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
+    printf("Spring %d: %.1f %.1f %d %d \n", iSpr, model->s[iSpr].ke, model->s[iSpr].kp, model->s[iSpr].p1, model->s[iSpr].p2);
   }
 
   fclose( fp );
