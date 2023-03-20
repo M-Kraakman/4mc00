@@ -25,6 +25,9 @@
 #define DT          0.001
 #define PI_CONST    3.1415
 
+#define slope	1.0
+#define offset	0.0
+
 
 //------------------------------------------------------------------------------
 // Definition of new type Vec2

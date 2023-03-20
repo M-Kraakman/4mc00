@@ -35,9 +35,7 @@ void plot
 	int parID1;
 	int parID2;
 
-	float slope = 1.0;
-	float offset = 0.;
-	float wall_x2 = 1200;
+	float wall_x2 = 800;
 	float wall_y2;
 
 	of=fopen(name,"w");
@@ -75,10 +73,10 @@ void plot
 	}
 	
 	wall_y2 = slope * wall_x2 + offset;
-	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, wall_y2);
-	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0, 0, 0, 0);
-  
-	fprintf(of,"</g>\n</g>\n</svg>\n");
+	printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
+	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
+	fprintf(of,"</g>\n</g>\n");
+	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n</svg>\n", 0, 0, wall_x2, 800-wall_y2);
 	fclose(of);
 }
 
@@ -216,7 +214,7 @@ void solve
 
   }
 
-  double a = 1., b = 0.;
+  double a = slope, b = offset;
   double kp = model->s[0].kp;
   double ks = model->s[0].ke;
 
