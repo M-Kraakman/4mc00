@@ -28,31 +28,58 @@ void plot
     Model*          model )
 
 {
-  FILE *of;
-  int iPar;
- 
-  of=fopen(name,"w");
+	FILE *of;
+	int iPar;
+	int iSpr;
 
-  fprintf(of,"<?xml version='1.0' standalone='no'?>\n");
-  fprintf(of,"<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n");
-  fprintf(of,"'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n");
+	int parID1;
+	int parID2;
+
+	float slope = 1.0;
+	float offset = 0.;
+	float wall_x2 = 1200;
+	float wall_y2;
+
+	of=fopen(name,"w");
+
+	fprintf(of,"<?xml version='1.0' standalone='no'?>\n");
+	fprintf(of,"<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n");
+	fprintf(of,"'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n");
+
+	fprintf(of,"<svg width='1200px' height='800px' style='background-color: white' version='1.1'\n");
+	fprintf(of,"xmlns='http://www.w3.org/2000/svg'>\n");
+	fprintf(of,"<g transform='translate(300,0)'>\n");
+	fprintf(of,"<g transform='scale(1.5)'>\n");
+
+	for ( iPar = 0 ; iPar < model->nPar ; iPar++ )
+	{
+	fprintf(of,"<circle cx='%f' cy='%f' r='%f' fill='%s'/>\n",
+	        100*model->p[iPar].r.x,
+	        500-100*model->p[iPar].r.y,
+	        2.0 ,
+	        "#000000");
+	// printf("%.1f %.1f\n", 100*model->p[iPar].r.x, 500-100*model->p[iPar].r.y);
+	}
+
+	for ( iSpr = 0 ; iSpr < model->nSpr ; iSpr++)
+	{
+		parID1 = model->s[iSpr].p1 - 1;
+		parID2 = model->s[iSpr].p2 - 1;
+
+		fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n",
+				100*model->p[parID1].r.x,
+		        500-100*model->p[parID1].r.y,
+				100*model->p[parID2].r.x,
+		        500-100*model->p[parID2].r.y
+				);
+	}
+	
+	wall_y2 = slope * wall_x2 + offset;
+	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, wall_y2);
+	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0, 0, 0, 0);
   
-  fprintf(of,"<svg width='1200px' height='800px' style='background-color: white' version='1.1'\n");
-  fprintf(of,"xmlns='http://www.w3.org/2000/svg'>\n");
-  fprintf(of,"<g transform='translate(300,0)'>\n");
-  fprintf(of,"<g transform='scale(1.5)'>\n");
-  
-  for ( iPar = 0 ; iPar < model->nPar ; iPar++ )
-  {
-    fprintf(of,"<circle cx='%f' cy='%f' r='%f' fill='%s'/>\n",
-            100*model->p[iPar].r.x,
-            500-100*model->p[iPar].r.y,
-            2.0 ,
-            "#000000");
-  }
-  
-  fprintf(of,"</g>\n</g>\n</svg>\n");
-  fclose(of);
+	fprintf(of,"</g>\n</g>\n</svg>\n");
+	fclose(of);
 }
 
 
@@ -80,11 +107,15 @@ void readModel
   
   model->nPar   = nPar;
   model->nSpr   = nSpr;
-  
+
+
+  //printf("List of Particles\nID: rx ry m c vx vy ax ay fx fy\n");
   for ( iPar = 0 ; iPar < model->nPar ; iPar++ )
   {    
     fscanf(fp,"%e %e %e",&x,&y,&mass);
     
+	model->p[iPar].parID = iPar+1;
+
     model->p[iPar].r.x = x;
     model->p[iPar].r.y = y;
         
@@ -98,7 +129,11 @@ void readModel
     model->p[iPar].a.y = 0.0;  
     
     model->p[iPar].f.x = 0.0;
-    model->p[iPar].f.y = 0.0;  
+    model->p[iPar].f.y = 0.0;
+
+	//printf("%d: %.1f %.1f %.1f %d %.1f %.1f %.1f %.1f %.1f %.1f\n", model->p[iPar].parID, model->p[iPar].r.x, model->p[iPar].r.y,
+			//model->p[iPar].mass, model->p[iPar].constraint, model->p[iPar].v.x, model->p[iPar].v.y, model->p[iPar].a.x, model->p[iPar].a.y,
+			//model->p[iPar].f.x, model->p[iPar].f.y);  
   }
   
   for ( int iPar = 0 ; iPar < nPres ; iPar++ )
@@ -111,7 +146,7 @@ void readModel
 
   }
 
-  for ( int iSpr = 0 ; iSpr < nSpr ; iSpr++ )
+  for ( int iSpr = 0 ; iSpr < nSpr; iSpr++ )
   {
     fscanf(fp, "%d %d", &parID1, &parID2);
     
