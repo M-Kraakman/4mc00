@@ -187,8 +187,8 @@ void solve
 
   for ( iSpr = 0; iSpr < nSpr; iSpr++ )
   {
-	double ex = model->p[model->s[iSpr].p2].r.x - model->p[model->s[iSpr].p1].r.x;
-	double ey = model->p[model->s[iSpr].p2].r.y - model->p[model->s[iSpr].p1].r.y;
+	double ex = model->p[model->s[iSpr].p2 - 1].r.x - model->p[model->s[iSpr].p1 - 1].r.x;
+	double ey = model->p[model->s[iSpr].p2 - 1].r.y - model->p[model->s[iSpr].p1 - 1].r.y;
     
 	model->s[iSpr].length = sqrt(ex * ex + ey * ey);
 
@@ -205,14 +205,14 @@ void solve
     model->p[model->s[iSpr].p2 -1].f.x += - model->f[iSpr].fs.x;
     model->p[model->s[iSpr].p2 -1].f.y += - model->f[iSpr].fs.y;
 
-    printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",
+    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",
 
             model->s[iSpr].length,
 			eijx,
 			eijy,
             model->s[iSpr].uij,
             model->f[iSpr].fs.x,
-            model->f[iSpr].fs.y);
+            model->f[iSpr].fs.y);*/
   }
 
   for ( iPar = 0 ; iPar < nPar; iPar++ )
