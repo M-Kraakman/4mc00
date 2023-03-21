@@ -185,7 +185,7 @@ void solve
   const int nPar = model->nPar;
   const int nSpr = model->nSpr;
 
-  for ( iSpr = 0 ; iSpr < nSpr; iSpr++ )
+  for ( iSpr = 0 ; iSpr < nSpr; iSpr++ ) // Calculate old length of spring
   {
     int parID1 = model->s[iSpr].p1;
     int parID2 = model->s[iSpr].p2;
@@ -199,7 +199,13 @@ void solve
 
   }
 
-  for ( iPar = 0 ; iPar < nPar ; iPar++ )
+  for ( iPar = 0 ; iPar < nPar ; iPar++ ) // Store old particle position
+	{
+		double x0 = model->p[parID1 - 1].r.x;
+		double y0 = model->p[parID1 - 1].r.y;
+	}
+	
+  for ( iPar = 0 ; iPar < nPar ; iPar++ ) // First step of Penalty method
   {
     model->p[iPar].r.x += DT * model->p[iPar].v.x + 0.5*dt2*model->p[iPar].a.x;
     model->p[iPar].r.y += DT * model->p[iPar].v.y + 0.5*dt2*model->p[iPar].a.y;
@@ -218,7 +224,7 @@ void solve
   double kp = model->s[0].kp;
   double ks = model->s[0].ke;
 
-  for ( iSpr = 0; iSpr < nSpr; iSpr++ )
+  for ( iSpr = 0; iSpr < nSpr; iSpr++ ) // Calculate reaction forces
   {
 	double ex = model->p[model->s[iSpr].p2 - 1].r.x - model->p[model->s[iSpr].p1 - 1].r.x;
 	double ey = model->p[model->s[iSpr].p2 - 1].r.y - model->p[model->s[iSpr].p1 - 1].r.y;
@@ -248,7 +254,7 @@ void solve
             model->f[iSpr].fs.y);*/
   }
 
-  for ( iPar = 0 ; iPar < nPar; iPar++ )
+  for ( iPar = 0 ; iPar < nPar; iPar++ ) // Calclate contact forces
   {
     model->f[iPar].gFunc = a * model->p[iPar].r.x + b;
 
@@ -289,7 +295,7 @@ void solve
             model->f[iPar].fc.y)*/;
   }
        
-  for ( iPar= 0 ; iPar < nPar ; iPar++ )
+  for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate speed and acceleration of particles
   { 
     if ( model->p[iPar].constraint == 0 )
     {
@@ -307,6 +313,16 @@ void solve
 
     /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
   }
+
+  for (iPar= 0 ; iPar < nPar ; iPar++ )
+  {
+ 	double sx = abs(model->p[parID1 - 1].r.x - x0);
+	double sy = abs(model->p[parID1 - 1].r.y - y0);
+
+	double Wx = model->p[parID1 - 1].fc.x
+  
+		}
+
 }
 
   
