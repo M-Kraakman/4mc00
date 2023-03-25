@@ -28,6 +28,10 @@
 #define slope	1.0
 #define offset	0.0
 
+#define cosAMPLITUDE 0.5
+#define cosPERIOD    1.2
+#define cosOFFSET    -0.2
+
 
 //------------------------------------------------------------------------------
 // Definition of new type Vec2

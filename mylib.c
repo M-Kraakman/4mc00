@@ -79,8 +79,8 @@ void plot
 
     for (xVal = 0; xVal < amVal; xVal++)
     {
-        g1 = 0.5 * cos(1.2 * (xVal/10.)) + 0.2;
-        g2 = 0.5 * cos(1.2 * ((xVal+1)/10.)) + 0.2;
+        g1 = cosAMPLITUDE * cos(cosPERIOD * (xVal/10.)) + cosOFFSET;
+        g2 = cosAMPLITUDE * cos(cosPERIOD * ((xVal+1)/10.)) + cosOFFSET;
        
         fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='red'/>\n",
                 100*(xVal/10.),
@@ -96,10 +96,10 @@ void plot
         //printf("%f %f %f %f\n", 100.*xVal, 100*g1, 100.*(xVal+1), 100*g2);
     }
 
-	wall_y2 = slope * wall_x2 + offset;
+	/*wall_y2 = slope * wall_x2 + offset;
 	//printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
 	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
-	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
+	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);*/
     fprintf(of,"</g>\n</g>\n</svg>\n");
     fclose(of);
 }
@@ -234,11 +234,12 @@ void solve
     model->p[iPar].f.x = 0.;
     model->p[iPar].f.y = 0.;
 
-    /*printf("%d %.2f %.2f \n", iPar+1, model->p[iPar].r.x, model->p[iPar].r.y)*/;
+    //printf("%d %.2f %.2f \n", iPar+1, model->p[iPar].r.x, model->p[iPar].r.y);
 
   }
 
   double a = slope, b = offset;
+  double p = cosAMPLITUDE, l = cosPERIOD, h = cosOFFSET;
   double kp = model->s[0].kp;
   double ks = model->s[0].ke;
 
@@ -274,26 +275,57 @@ void solve
 
   for ( iPar = 0 ; iPar < nPar; iPar++ )
   {
-    model->f[iPar].gFunc = a * model->p[iPar].r.x + b;
+    //model->f[iPar].gFunc = a * model->p[iPar].r.x + b; //inclined wall
+    model->f[iPar].gFunc = p * cos(l * model->p[iPar].r.x) + h; //sinusoidal wall
 
-    if ( model->p[iPar].r.y <= model->f[iPar].gFunc )
+    if ( model->p[iPar].r.y <= model->f[iPar].gFunc && model->p[iPar].r.x > 0)
     {
-        model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
+        //----- INCLINED WALL ----
+        /*model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
         model->f[iPar].D = sqrt(
                                   ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
                                 + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
                                 );
 
-        model->f[iPar].n.x = -a;
-        model->f[iPar].n.y = 1.;
+        nx = -a;
+        ny = 1.;*/
 
-        model->f[iPar].norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
+        //----- SINUSOIDAL WALL -----
+        double xi = model->p[iPar].r.x;
+        double yi = model->p[iPar].r.y;
+        double xn = model->p[iPar].r.x;
 
-        model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / model->f[iPar].norm;
-        model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / model->f[iPar].norm;
+        while ( abs(2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn)) > 0.1)
+        {
+            double dEdx = 2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn);
+            double d2Edx2 = (2 - (2 * p * l * l * (p * cos(l * xn) + h - yi) * cos(l * xn)) + (2 * (p * l) * (p * l) * sin(l * xn) * sin(l * xn)));
+            
+            model->f[iPar].xFunc = xn - dEdx/d2Edx2;
+            xn = model->f[iPar].xFunc;
+
+            printf("%.2f %.2f %.2f %.2f %.2f %.2f\n", xi, yi, model->f[iPar].gFunc, xn, model->f[iPar].xFunc,2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn));
+        } 
+
+        model->f[iPar].D = sqrt(
+                                  ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
+                                + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
+                                );
+
+        double nx = p * l * sin(l * xn);
+        double ny = 1.;
+
+        //printf("%.2f %.2f %.2f\n", xi, yi, xn);
+
+        //----- CONTACT FORCE CALCULATION (GENERAL) -----
+        double norm = sqrt((nx * nx) + (ny * ny));
+
+        model->f[iPar].fc.x = kp * model->f[iPar].D * nx / norm;
+        model->f[iPar].fc.y = kp * model->f[iPar].D * ny / norm;
 
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
+
+        //printf("%.2f %.2f %.2f\n", model->p[iPar].f.x, model->p[iPar].f.y, xn);
     }
     /*else
     {
