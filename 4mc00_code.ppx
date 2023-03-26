@@ -2,30 +2,30 @@
 <settings version="1.0">
 	<category name="mylib.c">
 		<category name="Window">
-			<property name="Left" type="integer">160</property>
-			<property name="Top" type="integer">160</property>
-			<property name="Right" type="integer">1443</property>
-			<property name="Bottom" type="integer">667</property>
-			<property name="Maximized" type="integer">0</property>
-			<property name="Active" type="integer">0</property>
+			<property name="Left" type="integer">4294967287</property>
+			<property name="Top" type="integer">4294967258</property>
+			<property name="Right" type="integer">1720</property>
+			<property name="Bottom" type="integer">686</property>
+			<property name="Maximized" type="integer">1</property>
+			<property name="Active" type="integer">1</property>
 		</category>
 	</category>
 	<category name="mylib.h">
 		<category name="Window">
-			<property name="Left" type="integer">192</property>
-			<property name="Top" type="integer">192</property>
-			<property name="Right" type="integer">1475</property>
-			<property name="Bottom" type="integer">699</property>
+			<property name="Left" type="integer">64</property>
+			<property name="Top" type="integer">64</property>
+			<property name="Right" type="integer">1347</property>
+			<property name="Bottom" type="integer">571</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>
 	</category>
 	<category name="catheter.c">
 		<category name="Window">
-			<property name="Left" type="integer">224</property>
-			<property name="Top" type="integer">224</property>
-			<property name="Right" type="integer">1507</property>
-			<property name="Bottom" type="integer">731</property>
+			<property name="Left" type="integer">96</property>
+			<property name="Top" type="integer">96</property>
+			<property name="Right" type="integer">1379</property>
+			<property name="Bottom" type="integer">603</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>

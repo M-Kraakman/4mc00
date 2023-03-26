@@ -75,24 +75,27 @@ void plot
     // g(x) = pcos(lx)+h --> g(x) = 0.5cos(1.2x)+0.2
     int xVal;
     int amVal = 100;
-    float g1, g2;
+    float g1pos, g2pos, g1neg, g2neg;
 
     for (xVal = 0; xVal < amVal; xVal++)
     {
-        g1 = cosAMPLITUDE * cos(cosPERIOD * (xVal/10.)) + cosOFFSET;
-        g2 = cosAMPLITUDE * cos(cosPERIOD * ((xVal+1)/10.)) + cosOFFSET;
+        g1pos = cosAMPLITUDE * cos(cosPERIOD * (xVal/10.)) + cosOFFSET;
+        g2pos = cosAMPLITUDE * cos(cosPERIOD * ((xVal+1)/10.)) + cosOFFSET;
        
         fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='red'/>\n",
                 100*(xVal/10.),
-                560 - 100*g1,
+                525 - 100*g1pos,
                 100*((xVal + 1)/10.),
-                560 - 100*g2);
+                525 - 100*g2pos);
+
+        g1neg = cosAMPLITUDE * cos(cosPERIOD * (xVal/10.)) - cosOFFSET;
+        g2neg = cosAMPLITUDE * cos(cosPERIOD * ((xVal+1)/10.)) - cosOFFSET;
 
         fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='red'/>\n",
                 100*(xVal/10.),
-                520 - 100*g1,
+                525 - 100*g1neg,
                 100*((xVal + 1)/10.),
-                520 - 100*g2);
+                525 - 100*g2neg);
         //printf("%f %f %f %f\n", 100.*xVal, 100*g1, 100.*(xVal+1), 100*g2);
     }
 
@@ -277,23 +280,22 @@ void solve
   {
     //model->f[iPar].gFunc = a * model->p[iPar].r.x + b; //inclined wall
     model->f[iPar].gFunc = p * cos(l * model->p[iPar].r.x) + h; //sinusoidal wall
+    model->f[iPar].mingFunc = p * cos(l * model->p[iPar].r.x) - h;
 
-    if ( model->p[iPar].r.y <= model->f[iPar].gFunc && model->p[iPar].r.x > 0)
+    if ( model->p[iPar].r.y >= model->f[iPar].gFunc && model->p[iPar].r.x > 0)
     {
         //----- INCLINED WALL ----
         /*model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
-        model->f[iPar].D = sqrt(
-                                  ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
-                                + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
-                                );
-
+        
         nx = -a;
         ny = 1.;*/
 
         //----- SINUSOIDAL WALL -----
         double xi = model->p[iPar].r.x;
         double yi = model->p[iPar].r.y;
-        double xn = model->p[iPar].r.x;
+        double xn = xi;
+
+        printf("%.2f %.2f %.2f %.2f\n", xi, yi, model->f[iPar].gFunc, model->f[iPar].mingFunc);
 
         while ( abs(2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn)) > 0.1)
         {
@@ -303,7 +305,13 @@ void solve
             model->f[iPar].xFunc = xn - dEdx/d2Edx2;
             xn = model->f[iPar].xFunc;
 
-            printf("%.2f %.2f %.2f %.2f %.2f %.2f\n", xi, yi, model->f[iPar].gFunc, xn, model->f[iPar].xFunc,2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn));
+            /*printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",
+                    xi,
+                    yi,
+                    model->f[iPar].gFunc,
+                    xn,
+                    model->f[iPar].xFunc,
+                    2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn));*/
         } 
 
         model->f[iPar].D = sqrt(
@@ -311,10 +319,8 @@ void solve
                                 + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
                                 );
 
-        double nx = p * l * sin(l * xn);
+        double nx = p * l * sin(l * xi);
         double ny = 1.;
-
-        //printf("%.2f %.2f %.2f\n", xi, yi, xn);
 
         //----- CONTACT FORCE CALCULATION (GENERAL) -----
         double norm = sqrt((nx * nx) + (ny * ny));
@@ -327,11 +333,11 @@ void solve
 
         //printf("%.2f %.2f %.2f\n", model->p[iPar].f.x, model->p[iPar].f.y, xn);
     }
-    /*else
+    else
     {
         model->p[iPar].f.x += 0.;
         model->p[iPar].f.y += 0.;
-    }*/
+    }
 
     /*printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
 

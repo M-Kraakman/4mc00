@@ -30,7 +30,7 @@
 
 #define cosAMPLITUDE 0.5
 #define cosPERIOD    1.2
-#define cosOFFSET    -0.2
+#define cosOFFSET    0.2
 
 
 //------------------------------------------------------------------------------
@@ -91,6 +91,7 @@ typedef struct
 {
   double    xFunc;
   double    gFunc;
+  double    mingFunc;
   double    D;
   double    norm;
   Vec2      n;
