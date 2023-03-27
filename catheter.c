@@ -28,11 +28,11 @@ int main( int argc , char *argv[]){
 	fpt = fopen("Ekin.csv", "w+");
 	fprintf(fpt, "Step, Ekin\n");
 
-	while(iCyc < 30){
+	while(iCyc < 300000){
     	iCyc++;
     	Ek_total, Es_total = solve( &model );
       
-    	if(iCyc%10 == 0){
+    	if(iCyc%1000 == 0){
 	  		// Save kinetic energy
 			fprintf(fpt, "%d, %lf\n", iCyc, (Ek_total+Es_total)*1000000000);
 
