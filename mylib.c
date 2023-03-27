@@ -281,7 +281,7 @@ void solve
     model->f[iPar].gFuncTop = p * cos(l * model->p[iPar].r.x) + h;
     model->f[iPar].gFuncBttm = p * cos(l * model->p[iPar].r.x) - h;
 
-    if ( model->p[iPar].r.y <= model->f[iPar].gFuncBttm )
+    if ( model->p[iPar].r.y <= model->f[iPar].gFuncBttm && model->p[iPar].r.x > 0)
     {
         double xi = model->p[iPar].r.x;
         double yi = model->p[iPar].r.y;
@@ -295,10 +295,14 @@ void solve
         double dEdx = 2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) - h - yi) * sin(l * xn);
         double ddEdxx = 2 - 2 * p * l * l * (p * cos(l * xn) - h - yi) * cos(l * xn) + 2 * (p*l) * (p * l) * sin(l * xn) * sin(l * xn);
         
-        xn += - (dEdx / ddEdxx);
+        xn = xn - (dEdx / ddEdxx);
 
         model->f[iPar].xFunc = xn;
+        
+        printf("%.2f %.2f %.2f %.2f \n", xi, yi, model->f[iPar].gFuncBttm, xn);
         }
+
+        model->f[iPar].gFuncBttm = p * cos(l * model->f[iPar].xFunc) - h;
         
         model->f[iPar].D = sqrt(
                                   ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
@@ -316,9 +320,8 @@ void solve
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
 
-        //printf("%.2f %.2f %.2f %.2f \n", xi, yi, model->f[iPar].gFuncBttm, model->f[iPar].xFunc);
     }
-    else if ( model->p[iPar].r.y >= model->f[iPar].gFuncTop )
+    else if ( model->p[iPar].r.y >= model->f[iPar].gFuncTop && model->p[iPar].r.x > 0)
     {
         double xi = model->p[iPar].r.x;
         double yi = model->p[iPar].r.y;
@@ -332,14 +335,18 @@ void solve
         double dEdx = 2 * (xn - xi) - 2 * p * l * (p * cos(l * xn) + h - yi) * sin(l * xn);
         double ddEdxx = 2 - 2 * p * l * l * (p * cos(l * xn) + h - yi) * cos(l * xn) + 2 * (p*l) * (p * l) * sin(l * xn) * sin(l * xn);
         
-        xn += - (dEdx / ddEdxx);
+        xn = xn - (dEdx / ddEdxx);
 
         model->f[iPar].xFunc = xn;
+        
+        printf("%.2f %.2f %.2f %.2f \n", xi, yi, model->f[iPar].gFuncTop, xn);
         }
         
+        model->f[iPar].gFuncTop = p * cos(l * model->f[iPar].xFunc) + h;
+
         model->f[iPar].D = sqrt(
                                   ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
-                                + ((model->f[iPar].gFuncBttm - model->p[iPar].r.y) * (model->f[iPar].gFuncBttm - model->p[iPar].r.y))
+                                + ((model->f[iPar].gFuncTop - model->p[iPar].r.y) * (model->f[iPar].gFuncTop - model->p[iPar].r.y))
                                 );
 
         model->f[iPar].n.x = p * l * sin(l * model->f[iPar].xFunc);
