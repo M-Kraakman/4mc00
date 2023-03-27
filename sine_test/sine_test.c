@@ -10,13 +10,13 @@ int main(void){
 }
 
 void plot(){
-	float amp = 10;
+	/*float amp = 10;
 	float spc = 1;
 	float frq = 0.1;
 	float phs = 0;
 
 	int i = 0;
-	double x1, y1, x2, y2;
+	double x1, y1, x2, y2;*/
 	
 	FILE *of;
 	of=fopen(name,"w");

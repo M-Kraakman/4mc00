@@ -73,7 +73,7 @@ void plot
 	}
 	
 	wall_y2 = slope * wall_x2 + offset;
-	printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
+	//printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
 	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
 	fprintf(of,"</g>\n</g>\n");
 	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n</svg>\n", 0, 0, wall_x2, 800-wall_y2);
@@ -173,7 +173,7 @@ void readModel
 //------------------------------------------------------------------------------
 
 
-void solve
+double solve
 
   ( Model*   model)
 
@@ -184,6 +184,9 @@ void solve
 
   const int nPar = model->nPar;
   const int nSpr = model->nSpr;
+
+	double		Ek_total = 0.;
+	double		Es_total = 0.;
 
   for ( iSpr = 0 ; iSpr < nSpr; iSpr++ ) // Calculate old length of spring
   {
@@ -198,12 +201,6 @@ void solve
                              );
 
   }
-
-  for ( iPar = 0 ; iPar < nPar ; iPar++ ) // Store old particle position
-	{
-		double x0 = model->p[parID1 - 1].r.x;
-		double y0 = model->p[parID1 - 1].r.y;
-	}
 	
   for ( iPar = 0 ; iPar < nPar ; iPar++ ) // First step of Penalty method
   {
@@ -224,7 +221,7 @@ void solve
   double kp = model->s[0].kp;
   double ks = model->s[0].ke;
 
-  for ( iSpr = 0; iSpr < nSpr; iSpr++ ) // Calculate reaction forces
+  for ( iSpr = 0; iSpr < nSpr; iSpr++ ) // Calculate reaction forces in springs, and energy
   {
 	double ex = model->p[model->s[iSpr].p2 - 1].r.x - model->p[model->s[iSpr].p1 - 1].r.x;
 	double ey = model->p[model->s[iSpr].p2 - 1].r.y - model->p[model->s[iSpr].p1 - 1].r.y;
@@ -244,14 +241,7 @@ void solve
     model->p[model->s[iSpr].p2 -1].f.x += - model->f[iSpr].fs.x;
     model->p[model->s[iSpr].p2 -1].f.y += - model->f[iSpr].fs.y;
 
-    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",
-
-            model->s[iSpr].length,
-			eijx,
-			eijy,
-            model->s[iSpr].uij,
-            model->f[iSpr].fs.x,
-            model->f[iSpr].fs.y);*/
+	Es_total += .5 * ks * model->s[iSpr].uij*model->s[iSpr].uij;
   }
 
   for ( iPar = 0 ; iPar < nPar; iPar++ ) // Calclate contact forces
@@ -277,25 +267,9 @@ void solve
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
     }
-    /*else
-    {
-        model->p[iPar].f.x += 0.;
-        model->p[iPar].f.y += 0.;
-    }*/
-
-    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
-
-            model->f[iPar].gFunc,
-            model->f[iPar].xFunc,
-            model->f[iPar].D,
-            model->f[iPar].n.x,
-            model->f[iPar].n.y,
-            model->f[iPar].norm,
-            model->f[iPar].fc.x,
-            model->f[iPar].fc.y)*/;
   }
        
-  for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate speed and acceleration of particles
+  for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate speed, acceleration, and energy of particles
   { 
     if ( model->p[iPar].constraint == 0 )
     {
@@ -308,21 +282,15 @@ void solve
       model->p[iPar].a.y = 0.0;
     }
     
+	printf("%d %f %f\n", iPar+1, model->p[iPar].a.x, model->p[iPar].a.y);
+
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;
 
-    /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
+	Ek_total += 0.5*model->p[iPar].mass*(model->p[iPar].v.x*model->p[iPar].v.x + model->p[iPar].v.y*model->p[iPar].v.y);  
   }
-
-  for (iPar= 0 ; iPar < nPar ; iPar++ )
-  {
- 	double sx = abs(model->p[parID1 - 1].r.x - x0);
-	double sy = abs(model->p[parID1 - 1].r.y - y0);
-
-	double Wx = model->p[parID1 - 1].fc.x
-  
-		}
-
+	//printf("%lf + %lf = %lf\n", Ek_total*1000000000, Es_total*1000000000, (Ek_total+Es_total)*1000000000);
+	return Ek_total, Es_total;
 }
 
   
