@@ -79,8 +79,8 @@ void plot
 
     for (xVal = 0; xVal < amVal; xVal++)
     {
-        g1 = 0.5 * cos(1.2 * (xVal/10.)) + 0.2;
-        g2 = 0.5 * cos(1.2 * ((xVal+1)/10.)) + 0.2;
+        g1 = amp * cos(per * (xVal/10.)) + off;
+        g2 = amp * cos(per * ((xVal+1)/10.)) + off;
        
         fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='red'/>\n",
                 100*(xVal/10.),
@@ -272,11 +272,13 @@ void solve
             model->f[iSpr].fs.y);*/
   }
 
-  for ( iPar = 0 ; iPar < nPar; iPar++ )
+  for ( iPar = 0 ; iPar < nPar; iPar++ ) // Penalty method
   {
-    model->f[iPar].gTop = a * model->p[iPar].r.x + b;
+    double gTop = amp * cos(per * model->p[iPar].r.x) + off;
+	double gBot = amp * cos(per * model->p[iPar].r.x) - off;
 
-    if ( model->p[iPar].r.y <= model->f[iPar].gFunc )
+
+    if ( model->p[iPar].r.y <= gTop )
     {
         model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
         model->f[iPar].D = sqrt(

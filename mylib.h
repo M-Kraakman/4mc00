@@ -89,8 +89,6 @@ typedef struct
 
 typedef struct
 {
-  double    xFunc;
-  double    gTop, gBot;
   double    D;
   double    norm;
   Vec2      n;
