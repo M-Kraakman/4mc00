@@ -99,7 +99,7 @@ void plot
 	wall_y2 = slope * wall_x2 + offset;
 	//printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
 	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
-	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
+	//fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
     fprintf(of,"</g>\n</g>\n</svg>\n");
     fclose(of);
 }
@@ -274,7 +274,7 @@ void solve
 
   for ( iPar = 0 ; iPar < nPar; iPar++ )
   {
-    model->f[iPar].gFunc = a * model->p[iPar].r.x + b;
+    model->f[iPar].gTop = a * model->p[iPar].r.x + b;
 
     if ( model->p[iPar].r.y <= model->f[iPar].gFunc )
     {

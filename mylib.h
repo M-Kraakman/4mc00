@@ -28,6 +28,10 @@
 #define slope	1.0
 #define offset	0.0
 
+#define amp		0.5
+#define	per		1.2
+#define off		0.2
+
 
 //------------------------------------------------------------------------------
 // Definition of new type Vec2
@@ -86,7 +90,7 @@ typedef struct
 typedef struct
 {
   double    xFunc;
-  double    gFunc;
+  double    gTop, gBot;
   double    D;
   double    norm;
   Vec2      n;
