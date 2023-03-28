@@ -73,7 +73,7 @@ void plot
 	}
 	
     // g(x) = pcos(lx)+h --> g(x) = 0.5cos(1.2x)+0.2
-    int xVal;
+    /*int xVal;
     int amVal = 100;
     float g1, g2;
 
@@ -94,12 +94,12 @@ void plot
                 100*((xVal + 1)/10.),
                 520 - 100*g2);
         //printf("%f %f %f %f\n", 100.*xVal, 100*g1, 100.*(xVal+1), 100*g2);
-    }
+    }*/
 
 	wall_y2 = slope * wall_x2 + offset;
 	//printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
 	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
-	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
+	fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='red'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
     fprintf(of,"</g>\n</g>\n</svg>\n");
     fclose(of);
 }
