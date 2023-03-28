@@ -148,7 +148,7 @@ void readModel
   {
     fscanf(fp, "%d %d", &parID1, &parID2);
     
-    model->s[iSpr].ke = 100.0;
+    model->s[iSpr].ks = 1.0;
     model->s[iSpr].kp = 10.0;
 
     model->s[iSpr].p1 = parID1;
@@ -219,7 +219,7 @@ double solve
 
   double a = slope, b = offset;
   double kp = model->s[0].kp;
-  double ks = model->s[0].ke;
+  double ks = model->s[0].ks;
 
   for ( iSpr = 0; iSpr < nSpr; iSpr++ ) // Calculate reaction forces in springs, and energy
   {
@@ -232,6 +232,10 @@ double solve
 	double eijy = ey / model->s[iSpr].length;
 
     model->s[iSpr].uij = model->s[iSpr].length - model->s[iSpr].length0;
+
+		//if (iSpr = 12){
+			//printf("%lf\n", model->s[iSpr].uij*1000);
+			//}
 
     model->f[iSpr].fs.x = ks * model->s[iSpr].uij * eijx;
     model->f[iSpr].fs.y = ks * model->s[iSpr].uij * eijy;
@@ -255,6 +259,9 @@ double solve
                                   ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
                                 + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
                                 );
+			//if(iPar = 0){
+					//printf("%lf\n", model->f[iPar].D);
+				//}
 
         model->f[iPar].n.x = -a;
         model->f[iPar].n.y = 1.;
@@ -266,7 +273,9 @@ double solve
 
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
-    }
+    }//else if(iPar = 0){
+					//printf("%lf\n", model->f[iPar].D);
+				//}
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate speed, acceleration, and energy of particles
@@ -282,7 +291,7 @@ double solve
       model->p[iPar].a.y = 0.0;
     }
     
-	printf("%d %f %f\n", iPar+1, model->p[iPar].a.x, model->p[iPar].a.y);
+	//printf("%d %f %f\n", iPar+1, model->p[iPar].a.x, model->p[iPar].a.y);
 
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;

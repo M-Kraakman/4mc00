@@ -70,7 +70,7 @@ typedef struct
 typedef struct
 {
   double    kp;
-  double    ke;
+  double    ks;
   double    length0;
   double    length;
   double    uij;
