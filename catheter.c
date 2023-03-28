@@ -25,13 +25,13 @@ int main( int argc , char *argv[])
      
   readModel( "geom01.dat" , &model );
 
-  while( iCyc < 300000 )
+  while( iCyc < 500000 )
   {
     iCyc++;
          
     solve( &model );
       
-    if ( iCyc%1000 == 0 )
+    if ( iCyc%10000 == 0 )
     {
       iPlot++;
 

@@ -276,37 +276,39 @@ void solve
 	double dEdx = 1;
 	double d2Edx2 = 0;
 
-    if ( model->p[iPar].r.y <= gTop && model->p[iPar].r.x > 0)
+    if ( model->p[iPar].r.y >= gTop && model->p[iPar].r.x > 0)
     {
-		printf("Under gTop!\n");
-		xn = model->p[iPar].r.x;
-		yn = model->p[iPar].r.y;
-		xi = xn;
+		//printf("Over gTop at x=");
+		double xn = model->p[iPar].r.x;
+		double yn = model->p[iPar].r.y;
+		double xi = xn;
 
 		while(abs(dEdx) > 0.01){
-				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)+h-yn)*sin(per*xi);
-				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)+h-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
+				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)+off-yn)*sin(per*xi);
+				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)+off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
 
 				xi = xi - dEdx/d2Edx2;
-				printf("%lf\n", xi);
+				//printf("%lf\n", xi);
 				}
 		double Dx = (xi - model->p[iPar].r.x);
 		double Dy = (gTop - model->p[iPar].r.y);
-		
-        model->f[iPar].D = sqrt(Dx*Dx - Dy*Dy);
+        double D = sqrt(Dx*Dx + Dy*Dy);
+			//printf("Dx=%lf\n", D);
 
-        model->f[iPar].n.x = -a;
-        model->f[iPar].n.y = 1.;
+        model->f[iPar].n.x = amp*per*sin(per*xi);
+        model->f[iPar].n.y = -1.;
 
-        model->f[iPar].norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
+        double norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
+			//printf("normal = %lf", model->f[iPar].norm);
 
-        model->f[iPar].fc.x = kp * model->f[iPar].D * model->f[iPar].n.x / model->f[iPar].norm;
-        model->f[iPar].fc.y = kp * model->f[iPar].D * model->f[iPar].n.y / model->f[iPar].norm;
+        model->f[iPar].fc.x = kp * D * model->f[iPar].n.x / norm;
+        model->f[iPar].fc.y = kp * D * model->f[iPar].n.y / norm;
+			//printf("fc: %lf %lf\n", model->f[iPar].fc.x, model->f[iPar].fc.y);
 
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
+			//printf("%lf %lf\n", model->p[iPar].f.x, model->f[iPar].fc.y);
     }
-
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )
@@ -324,7 +326,9 @@ void solve
     
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;
-
+	if (iPar==13){
+		printf("%lf %lf\n", model->p[iPar].a.x, model->p[iPar].v.x);
+	}
     /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
   }
 }
