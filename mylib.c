@@ -233,9 +233,6 @@ void solve
     
     model->p[iPar].f.x = 0.;
     model->p[iPar].f.y = 0.;
-
-    /*printf("%d %.2f %.2f \n", iPar+1, model->p[iPar].r.x, model->p[iPar].r.y)*/;
-
   }
 
   double a = slope, b = offset;
@@ -276,15 +273,27 @@ void solve
   {
     double gTop = amp * cos(per * model->p[iPar].r.x) + off;
 	double gBot = amp * cos(per * model->p[iPar].r.x) - off;
+	double dEdx = 1;
+	double d2Edx2 = 0;
 
-
-    if ( model->p[iPar].r.y <= gTop )
+    if ( model->p[iPar].r.y <= gTop && model->p[iPar].r.x > 0)
     {
-        model->f[iPar].xFunc = (model->p[iPar].r.x + a*model->p[iPar].r.y - a*b) / (1 + a * a);
-        model->f[iPar].D = sqrt(
-                                  ((model->f[iPar].xFunc - model->p[iPar].r.x) * (model->f[iPar].xFunc - model->p[iPar].r.x))
-                                + ((model->f[iPar].gFunc - model->p[iPar].r.y) * (model->f[iPar].gFunc - model->p[iPar].r.y))
-                                );
+		printf("Under gTop!\n");
+		xn = model->p[iPar].r.x;
+		yn = model->p[iPar].r.y;
+		xi = xn;
+
+		while(abs(dEdx) > 0.01){
+				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)+h-yn)*sin(per*xi);
+				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)+h-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
+
+				xi = xi - dEdx/d2Edx2;
+				printf("%lf\n", xi);
+				}
+		double Dx = (xi - model->p[iPar].r.x);
+		double Dy = (gTop - model->p[iPar].r.y);
+		
+        model->f[iPar].D = sqrt(Dx*Dx - Dy*Dy);
 
         model->f[iPar].n.x = -a;
         model->f[iPar].n.y = 1.;
@@ -297,22 +306,7 @@ void solve
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
     }
-    /*else
-    {
-        model->p[iPar].f.x += 0.;
-        model->p[iPar].f.y += 0.;
-    }*/
 
-    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f \n",
-
-            model->f[iPar].gFunc,
-            model->f[iPar].xFunc,
-            model->f[iPar].D,
-            model->f[iPar].n.x,
-            model->f[iPar].n.y,
-            model->f[iPar].norm,
-            model->f[iPar].fc.x,
-            model->f[iPar].fc.y)*/;
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )
