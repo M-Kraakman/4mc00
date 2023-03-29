@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings version="1.0">
 	<category name="mylib.c">
+		<category name="Foldings">
+			<property name="Line1" type="integer">30</property>
+			<property name="Line2" type="integer">111</property>
+			<property name="Line3" type="integer">192</property>
+			<property name="Line4" type="integer">206</property>
+			<property name="Line5" type="integer">221</property>
+		</category>
 		<category name="Window">
 			<property name="Left" type="integer">4294967287</property>
 			<property name="Top" type="integer">4294967258</property>
@@ -12,20 +19,20 @@
 	</category>
 	<category name="mylib.h">
 		<category name="Window">
-			<property name="Left" type="integer">128</property>
-			<property name="Top" type="integer">128</property>
-			<property name="Right" type="integer">1568</property>
-			<property name="Bottom" type="integer">635</property>
+			<property name="Left" type="integer">0</property>
+			<property name="Top" type="integer">0</property>
+			<property name="Right" type="integer">1440</property>
+			<property name="Bottom" type="integer">507</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>
 	</category>
 	<category name="catheter.c">
 		<category name="Window">
-			<property name="Left" type="integer">160</property>
-			<property name="Top" type="integer">160</property>
-			<property name="Right" type="integer">1600</property>
-			<property name="Bottom" type="integer">667</property>
+			<property name="Left" type="integer">32</property>
+			<property name="Top" type="integer">32</property>
+			<property name="Right" type="integer">1472</property>
+			<property name="Bottom" type="integer">539</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>
