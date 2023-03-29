@@ -19,20 +19,20 @@
 	</category>
 	<category name="mylib.h">
 		<category name="Window">
-			<property name="Left" type="integer">0</property>
-			<property name="Top" type="integer">0</property>
-			<property name="Right" type="integer">1440</property>
-			<property name="Bottom" type="integer">507</property>
+			<property name="Left" type="integer">224</property>
+			<property name="Top" type="integer">224</property>
+			<property name="Right" type="integer">1664</property>
+			<property name="Bottom" type="integer">731</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>
 	</category>
 	<category name="catheter.c">
 		<category name="Window">
-			<property name="Left" type="integer">32</property>
-			<property name="Top" type="integer">32</property>
-			<property name="Right" type="integer">1472</property>
-			<property name="Bottom" type="integer">539</property>
+			<property name="Left" type="integer">0</property>
+			<property name="Top" type="integer">0</property>
+			<property name="Right" type="integer">1440</property>
+			<property name="Bottom" type="integer">507</property>
 			<property name="Maximized" type="integer">0</property>
 			<property name="Active" type="integer">0</property>
 		</category>

@@ -282,7 +282,7 @@ void solve
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
 
-    }if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
+    }else if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
 		xn = model->p[iPar].r.x;
 		yn = model->p[iPar].r.y;
 		xi = xn;
