@@ -6,9 +6,9 @@
 * which are connected by elastoplastic springs with a 
 * stiffness.
 *
-* Version | Description                               | Author | Date
-* 0.1     | Initial version, read and write particles | JR     | 100122
-*         |                                           |        |
+* Authors: Mattias Hart and Martijn Kraakman
+* Version 3: Both top and bottom sinusoidal wall. Currently not working.
+* Date: 29/3/2023
 *
 *******************************************************************************/
 
@@ -25,13 +25,13 @@ int main( int argc , char *argv[])
      
   readModel( "geom01.dat" , &model );
 
-  while( iCyc < 500000 )
+  while( iCyc < 300000 )
   {
     iCyc++;
          
     solve( &model );
       
-    if ( iCyc%10000 == 0 )
+    if ( iCyc%1000 == 0 )
     {
       iPlot++;
 

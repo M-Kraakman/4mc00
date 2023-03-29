@@ -6,9 +6,9 @@
 * which are connected by elastoplastic springs with a 
 * stiffness.
 *
-* Version | Description                               | Author | Date
-* 0.1     | Initial version, read and write particles | JR     | 100122
-*         |                                           |        |
+* Authors: Mattias Hart and Martijn Kraakman
+* Version 3: Both top and bottom sinusoidal wall. Currently not working.
+* Date: 29/3/2023
 *
 *******************************************************************************/
 
@@ -98,8 +98,6 @@ typedef struct
 //------------------------------------------------------------------------------
 // Definition of new type Model that contains
 //   an array of particles and some counter.
-// 
-//   an array of spring should be added here!
 //------------------------------------------------------------------------------
 
 typedef struct
@@ -115,7 +113,7 @@ typedef struct
 
 
 //------------------------------------------------------------------------------
-//  Function to plt SVG
+//  Function to plot SVGs
 //------------------------------------------------------------------------------
 
 

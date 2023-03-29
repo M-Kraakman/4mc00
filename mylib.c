@@ -6,9 +6,9 @@
 * which are connected by elastoplastic springs with a 
 * stiffness.
 *
-* Version | Description                               | Author | Date
-* 0.1     | Initial version, read and write particles | JR     | 100122
-*         |                                           |        |
+* Authors: Mattias Hart and Martijn Kraakman
+* Version 3: Both top and bottom sinusoidal wall. Currently not working.
+* Date: 29/3/2023
 *
 *******************************************************************************/
 
@@ -18,7 +18,7 @@
 
 
 //------------------------------------------------------------------------------
-//
+// Function to plot SVGs
 //------------------------------------------------------------------------------
 
 
@@ -56,7 +56,6 @@ void plot
 	        500-100*model->p[iPar].r.y,
 	        2.0 ,
 	        "#000000");
-	// printf("%.1f %.1f\n", 100*model->p[iPar].r.x, 500-100*model->p[iPar].r.y);
 	}
 
 	for ( iSpr = 0 ; iSpr < model->nSpr ; iSpr++)
@@ -72,7 +71,6 @@ void plot
 				);
 	}
 	
-    // g(x) = pcos(lx)+h --> g(x) = 0.5cos(1.2x)+0.2
     int xVal;
     int amVal = 100;
     float g1, g2;
@@ -93,20 +91,15 @@ void plot
                 520 - 100*g1,
                 100*((xVal + 1)/10.),
                 520 - 100*g2);
-        //printf("%f %f %f %f\n", 100.*xVal, 100*g1, 100.*(xVal+1), 100*g2);
     }
 
-	wall_y2 = slope * wall_x2 + offset;
-	//printf("800 - wall_y2 = %.f * %.f + %.f = %.f\n", slope, wall_x2, offset, 800 - wall_y2);
-	//printf("drawing line from (%.1f, %.1f) to (%.1f, %.1f)\n", 0., 0., wall_x2, 800-wall_y2);  
-	//fprintf(of, "<line x1='%f' y1='%f' x2='%f' y2='%f' stroke='black'/>\n", 0. - 300, 800., wall_x2 - 300, 800-wall_y2);
     fprintf(of,"</g>\n</g>\n</svg>\n");
     fclose(of);
 }
 
 
 //---------------------------------------------------------------------
-//
+// Function to import data
 //---------------------------------------------------------------------
 
 
@@ -125,13 +118,12 @@ void readModel
     printf("Cannot open file.\n");
   }
   
-  fscanf(fp, "%d %d %d", &nPar , &nPres , &nSpr ); /* read from file */
+  fscanf(fp, "%d %d %d", &nPar , &nPres , &nSpr );
   
   model->nPar   = nPar;
   model->nSpr   = nSpr;
 
 
-  //printf("List of Particles\nID: rx ry m c vx vy ax ay fx fy\n");
   for ( iPar = 0 ; iPar < model->nPar ; iPar++ )
   {    
     fscanf(fp,"%e %e %e",&x,&y,&mass);
@@ -152,10 +144,6 @@ void readModel
     
     model->p[iPar].f.x = 0.0;
     model->p[iPar].f.y = 0.0;
-
-	//printf("%d: %.1f %.1f %.1f %d %.1f %.1f %.1f %.1f %.1f %.1f\n", model->p[iPar].parID, model->p[iPar].r.x, model->p[iPar].r.y,
-			//model->p[iPar].mass, model->p[iPar].constraint, model->p[iPar].v.x, model->p[iPar].v.y, model->p[iPar].a.x, model->p[iPar].a.y,
-			//model->p[iPar].f.x, model->p[iPar].f.y);  
   }
   
   for ( int iPar = 0 ; iPar < nPres ; iPar++ )
@@ -177,15 +165,6 @@ void readModel
 
     model->s[iSpr].p1 = parID1;
     model->s[iSpr].p2 = parID2;
-    
-     /*printf("Spring %d: %.1f %.1f %d %d %.2f \n",
-            
-            iSpr+1,
-            model->s[iSpr].ke,
-            model->s[iSpr].kp,
-            model->s[iSpr].p1,
-            model->s[iSpr].p2,
-            model->s[iSpr].length0);*/
   }
 
   fclose( fp );
@@ -193,7 +172,7 @@ void readModel
     
 
 //------------------------------------------------------------------------------
-//
+// Function to solve the algorithm
 //------------------------------------------------------------------------------
 
 
@@ -209,7 +188,7 @@ void solve
   const int nPar = model->nPar;
   const int nSpr = model->nSpr;
 
-  for ( iSpr = 0 ; iSpr < nSpr; iSpr++ )
+  for ( iSpr = 0 ; iSpr < nSpr; iSpr++ ) // Calculate old spring length
   {
     int parID1 = model->s[iSpr].p1;
     int parID2 = model->s[iSpr].p2;
@@ -223,7 +202,7 @@ void solve
 
   }
 
-  for ( iPar = 0 ; iPar < nPar ; iPar++ )
+  for ( iPar = 0 ; iPar < nPar ; iPar++ ) // Determine particle speed and acceleration
   {
     model->p[iPar].r.x += DT * model->p[iPar].v.x + 0.5*dt2*model->p[iPar].a.x;
     model->p[iPar].r.y += DT * model->p[iPar].v.y + 0.5*dt2*model->p[iPar].a.y;
@@ -235,11 +214,10 @@ void solve
     model->p[iPar].f.y = 0.;
   }
 
-  double a = slope, b = offset;
   double kp = model->s[0].kp;
   double ks = model->s[0].ke;
 
-  for ( iSpr = 0; iSpr < nSpr; iSpr++ )
+  for ( iSpr = 0; iSpr < nSpr; iSpr++ ) // Caclulate spring deflection and spring forces
   {
 	double ex = model->p[model->s[iSpr].p2 - 1].r.x - model->p[model->s[iSpr].p1 - 1].r.x;
 	double ey = model->p[model->s[iSpr].p2 - 1].r.y - model->p[model->s[iSpr].p1 - 1].r.y;
@@ -258,18 +236,9 @@ void solve
     model->p[model->s[iSpr].p1 -1].f.y += model->f[iSpr].fs.y;
     model->p[model->s[iSpr].p2 -1].f.x += - model->f[iSpr].fs.x;
     model->p[model->s[iSpr].p2 -1].f.y += - model->f[iSpr].fs.y;
-
-    /*printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",
-
-            model->s[iSpr].length,
-			eijx,
-			eijy,
-            model->s[iSpr].uij,
-            model->f[iSpr].fs.x,
-            model->f[iSpr].fs.y);*/
   }
 
-  for ( iPar = 0 ; iPar < nPar; iPar++ ) // Penalty method
+  for ( iPar = 0 ; iPar < nPar; iPar++ ) // Calculate contact forces using Penalty method
   {
     double gTop = amp * cos(per * model->p[iPar].r.x) + off;
 	double gBot = amp * cos(per * model->p[iPar].r.x) - off;
@@ -277,24 +246,23 @@ void solve
 	double xn, yn, xi, Dx, Dy, D;
 	int try;
 
-    /*if ( model->p[iPar].r.y >= gTop && model->p[iPar].r.x > 0)
+    if ( model->p[iPar].r.y >= gTop && model->p[iPar].r.x > 0)
     {
-			//printf("through top\n");
 		xn = model->p[iPar].r.x;
 		yn = model->p[iPar].r.y;
 		xi = xn;
 		dEdx = 1;
 		try = 0;
 
-		while(abs(dEdx) > 0.01){
+		while(abs(dEdx) > 0.01)
+				{
 				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)+off-yn)*sin(per*xi);
 				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)+off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
 				xi = xi - dEdx/d2Edx2;
-				//printf("try %d: dEdx = %lf at %lf\n", try, dEdx, xi);
 
 				try++;
-				if (try > 50){
-					//printf("stuck at top");
+				if (try > 50)
+					{
 					xi = xn;
 					dEdx = 0;
 					}
@@ -314,8 +282,7 @@ void solve
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
 
-    }*/if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
-		printf("through bottom at %lf\n", model->p[iPar].r.x);
+    }if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
 		xn = model->p[iPar].r.x;
 		yn = model->p[iPar].r.y;
 		xi = xn;
@@ -327,11 +294,9 @@ void solve
 				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)-off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
 
 				xi = xi - dEdx/d2Edx2;
-				printf("xi: %lf dEdx: %lf\n", xi, dEdx);
 
 				try++;
 				if (try > 50){
-					//printf("stuck at bottom");
 					xi = xn;
 					dEdx = 0;
 					}
@@ -353,7 +318,7 @@ void solve
 		}
   }
        
-  for ( iPar= 0 ; iPar < nPar ; iPar++ )
+  for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate new particle speed and acceleration
   { 
     if ( model->p[iPar].constraint == 0 )
     {
@@ -369,15 +334,13 @@ void solve
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;
 	if (iPar==13){
-		//printf("%lf %lf\n", model->p[iPar].a.x, model->p[iPar].v.x);
-	}
-    /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
+	} 
   }
 }
 
   
 //------------------------------------------------------------------------------
-//
+// Function for storing SVGs
 //------------------------------------------------------------------------------
 
 
