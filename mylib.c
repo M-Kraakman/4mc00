@@ -281,41 +281,7 @@ void solve
 
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
-
-    }if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
-		xn = model->p[iPar].r.x;
-		yn = model->p[iPar].r.y;
-		xi = xn;
-		dEdx = 1;
-		try = 0;
-
-		while(abs(dEdx) > 0.01){
-				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)-off-yn)*sin(per*xi);
-				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)-off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
-
-				xi = xi - dEdx/d2Edx2;
-
-				try++;
-				if (try > 50){
-					xi = xn;
-					dEdx = 0;
-					}
-				}
-		Dx = (xi - model->p[iPar].r.x);
-		Dy = (gBot - model->p[iPar].r.y);
-        D = sqrt(Dx*Dx + Dy*Dy);
-
-        model->f[iPar].n.x = amp*per*sin(per*xi);
-        model->f[iPar].n.y = 1.;
-
-        double norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
-
-        model->f[iPar].fc.x = kp * D * model->f[iPar].n.x / norm;
-        model->f[iPar].fc.y = kp * D * model->f[iPar].n.y / norm;
-
-        model->p[iPar].f.x += model->f[iPar].fc.x;
-        model->p[iPar].f.y += model->f[iPar].fc.y;
-		}
+    }
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ ) // Calculate new particle speed and acceleration
