@@ -273,42 +273,84 @@ void solve
   {
     double gTop = amp * cos(per * model->p[iPar].r.x) + off;
 	double gBot = amp * cos(per * model->p[iPar].r.x) - off;
-	double dEdx = 1;
-	double d2Edx2 = 0;
+	double dEdx, d2Edx2;
+	double xn, yn, xi, Dx, Dy, D;
+	int try;
 
-    if ( model->p[iPar].r.y >= gTop && model->p[iPar].r.x > 0)
+    /*if ( model->p[iPar].r.y >= gTop && model->p[iPar].r.x > 0)
     {
-		//printf("Over gTop at x=");
-		double xn = model->p[iPar].r.x;
-		double yn = model->p[iPar].r.y;
-		double xi = xn;
+			//printf("through top\n");
+		xn = model->p[iPar].r.x;
+		yn = model->p[iPar].r.y;
+		xi = xn;
+		dEdx = 1;
+		try = 0;
 
 		while(abs(dEdx) > 0.01){
 				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)+off-yn)*sin(per*xi);
 				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)+off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
-
 				xi = xi - dEdx/d2Edx2;
-				//printf("%lf\n", xi);
+				//printf("try %d: dEdx = %lf at %lf\n", try, dEdx, xi);
+
+				try++;
+				if (try > 50){
+					//printf("stuck at top");
+					xi = xn;
+					dEdx = 0;
+					}
 				}
-		double Dx = (xi - model->p[iPar].r.x);
-		double Dy = (gTop - model->p[iPar].r.y);
-        double D = sqrt(Dx*Dx + Dy*Dy);
-			//printf("Dx=%lf\n", D);
+		Dx = (xi - model->p[iPar].r.x);
+		Dy = (gTop - model->p[iPar].r.y);
+        D = sqrt(Dx*Dx + Dy*Dy);
 
         model->f[iPar].n.x = amp*per*sin(per*xi);
         model->f[iPar].n.y = -1.;
 
         double norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
-			//printf("normal = %lf", model->f[iPar].norm);
 
         model->f[iPar].fc.x = kp * D * model->f[iPar].n.x / norm;
         model->f[iPar].fc.y = kp * D * model->f[iPar].n.y / norm;
-			//printf("fc: %lf %lf\n", model->f[iPar].fc.x, model->f[iPar].fc.y);
 
         model->p[iPar].f.x += model->f[iPar].fc.x;
         model->p[iPar].f.y += model->f[iPar].fc.y;
-			//printf("%lf %lf\n", model->p[iPar].f.x, model->f[iPar].fc.y);
-    }
+
+    }*/if (model->p[iPar].r.y <= gBot && model->p[iPar].r.x > 0){		
+		printf("through bottom at %lf\n", model->p[iPar].r.x);
+		xn = model->p[iPar].r.x;
+		yn = model->p[iPar].r.y;
+		xi = xn;
+		dEdx = 1;
+		try = 0;
+
+		while(abs(dEdx) > 0.01){
+				dEdx = 2*(xi-xn)-2*amp*per*(amp*cos(per*xi)-off-yn)*sin(per*xi);
+				d2Edx2 = 2-2*amp*per*per*(amp*cos(per*xi)-off-yn)*cos(per*xi)+2*(amp*per)*(amp*per)*sin(per*xi)*sin(per*xi);
+
+				xi = xi - dEdx/d2Edx2;
+				printf("xi: %lf dEdx: %lf\n", xi, dEdx);
+
+				try++;
+				if (try > 50){
+					//printf("stuck at bottom");
+					xi = xn;
+					dEdx = 0;
+					}
+				}
+		Dx = (xi - model->p[iPar].r.x);
+		Dy = (gBot - model->p[iPar].r.y);
+        D = sqrt(Dx*Dx + Dy*Dy);
+
+        model->f[iPar].n.x = amp*per*sin(per*xi);
+        model->f[iPar].n.y = 1.;
+
+        double norm = sqrt((model->f[iPar].n.x * model->f[iPar].n.x) + (model->f[iPar].n.y * model->f[iPar].n.y));
+
+        model->f[iPar].fc.x = kp * D * model->f[iPar].n.x / norm;
+        model->f[iPar].fc.y = kp * D * model->f[iPar].n.y / norm;
+
+        model->p[iPar].f.x += model->f[iPar].fc.x;
+        model->p[iPar].f.y += model->f[iPar].fc.y;
+		}
   }
        
   for ( iPar= 0 ; iPar < nPar ; iPar++ )
@@ -327,7 +369,7 @@ void solve
     model->p[iPar].v.x += 0.5*DT*model->p[iPar].a.x;
     model->p[iPar].v.y += 0.5*DT*model->p[iPar].a.y;
 	if (iPar==13){
-		printf("%lf %lf\n", model->p[iPar].a.x, model->p[iPar].v.x);
+		//printf("%lf %lf\n", model->p[iPar].a.x, model->p[iPar].v.x);
 	}
     /*printf("%2f %2f\n", model->p[iPar].f.x, model->p[iPar].f.y);*/   
   }
